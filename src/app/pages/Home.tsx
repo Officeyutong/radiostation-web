@@ -32,7 +32,7 @@ const ConfirmModal: React.FC<ConfirmingModalProps> = ({ songID, onApprove, onClo
             <Message warning>
                 <Message.Header>注意</Message.Header>
                 <p>请确认这是您要提交的歌曲后再点击确认！</p>
-                <p>提交错误的歌曲ID一律会被驳回！</p>
+                {/* <p>提交错误的歌曲ID一律会被驳回！</p> */}
             </Message>
         </Modal.Content>
         <Modal.Actions>
