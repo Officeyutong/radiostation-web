@@ -44,8 +44,8 @@ const ConfirmModal: React.FC<ConfirmingModalProps> = ({ songID, onApprove, onClo
 };
 const Home: React.FC<{}> = () => {
     const history = useHistory();
-    let [song, setSong] = useState("114514");
-    let [requester, setRequester] = useState("qwqqwq");
+    let [song, setSong] = useState("");
+    let [requester, setRequester] = useState("");
     let [target, setTarget] = useState("");
     let [comment, setComment] = useState("");
     let [anonymous, setAnonymous] = useState(false);
@@ -62,6 +62,7 @@ const Home: React.FC<{}> = () => {
         songID: -1,
         name: ""
     });
+
     useEffect(() => {
         document.title = "益文之声点歌姬";
     });
@@ -90,9 +91,28 @@ const Home: React.FC<{}> = () => {
             showDialog("两次提交请求之间必须间隔大于24小时！", "错误", true);
             return;
         }
-
+        let songID = song;
+        console.log(songID);
+        let numberRegexp = /^[0-9]+$/;
+        let type1 = /song\?id=([0-9]+)/; //https://music.163.com/#/song?id=xxxx
+        let type2 = /song\/([0-9]+)/; //http://music.163.com/song/28568064?userid=311709108
+        if (!numberRegexp.test(songID)) {
+            if (type1.test(songID)) {
+                let result = type1.exec(songID);
+                if (result) {
+                    songID = result[1];
+                }
+            } else if (type2.test(songID)) {
+                let result = type2.exec(songID);
+                if (result) {
+                    songID = result[1];
+                }
+            }
+            console.log("Extracted song id:", songID);
+            // return;
+        }
         axios.post("/api/query_song", {
-            songID: parseInt(song)
+            songID: parseInt(songID)
         }).then(resp => {
             let data = resp.data;
             console.log(data);
@@ -101,7 +121,7 @@ const Home: React.FC<{}> = () => {
                 return;
             }
             setSongData({
-                songID: parseInt(song),
+                songID: parseInt(songID),
                 audioURL: data.data.audio_url,
                 author: data.data.author,
                 picURL: data.data.picture_url,
@@ -111,8 +131,9 @@ const Home: React.FC<{}> = () => {
         });
     };
     const realSubmit = () => {
+
         axios.post("/api/submit", {
-            songID: song,
+            songID: songData.songID,
             requester: requester,
             anonymous: anonymous,
             target: target,
