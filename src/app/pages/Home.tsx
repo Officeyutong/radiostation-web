@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Header, Input, Segment, Form, Checkbox, Button, Modal, Message, Pagination, Label, Icon, Divider } from "semantic-ui-react";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
@@ -6,6 +6,7 @@ import { show as showDialog } from "../dialogs/Dialog";
 import Cookies from "js-cookie";
 import { SongData } from "../types";
 import SongCard from "../utils/SongCard";
+import SearchModal from "./SearchModal";
 type ConfirmingModalProps = {
     onApprove: () => (void);
     onClose: () => (void);
@@ -53,7 +54,7 @@ const Home: React.FC<{}> = () => {
         ID: boolean;
         requester: boolean;
     }>({ ID: false, requester: false });
-
+    let [showSearching, setShowSearching] = useState(false);
     let [songData, setSongData] = useState<SongData>({
         audioURL: "",
         author: "",
@@ -132,6 +133,10 @@ const Home: React.FC<{}> = () => {
         setSong(songID.toString());
         document.body.scrollIntoView();
     };
+    const searchDoneCallback = (songID: number) => {
+        setShowSearching(false);
+        setSong(songID.toString());
+    };
     return <Container style={{ marginTop: "70px", marginBottom: "70px" }}>
         <div style={{ top: "10%" }}>
             <Header as="h1">
@@ -141,13 +146,28 @@ const Home: React.FC<{}> = () => {
                 <Segment stacked>
                     <Form as="div" >
                         <Form.Field>
-                            <Input error={error.ID} label={{ icon: "asterisk" }} value={song} onChange={e => {
-                                setSong(e.target.value);
-                                setError({
-                                    ...error,
-                                    ID: false
-                                });
-                            }} labelPosition="left corner" icon="music" placeholder="网易云歌曲链接或ID(必填).."></Input>
+                            <Input
+                                error={error.ID}
+                                label={{ icon: "asterisk" }}
+                                value={song}
+                                onChange={e => {
+                                    setSong(e.target.value);
+                                    setError({
+                                        ...error,
+                                        ID: false
+                                    });
+                                }}
+                                labelPosition="left corner"
+                                // icon="music" 
+                                action={{
+                                    color: "teal",
+                                    labelPosition: "right",
+                                    icon: "search",
+                                    content: "打开搜索页面..",
+                                    onClick: () => setShowSearching(true)
+                                }}
+                                placeholder="网易云歌曲链接或ID(必填).."
+                            ></Input>
                         </Form.Field>
                         <Form.Field>
                             <Input error={error.requester} label={{ icon: "asterisk" }} value={requester} onChange={e => {
@@ -186,8 +206,14 @@ const Home: React.FC<{}> = () => {
                     picURL={songData.picURL}
                     name={songData.name}
                 >
-
                 </ConfirmModal>
+                <SearchModal
+                    doneCallback={searchDoneCallback}
+                    onClose={() => setShowSearching(false)}
+                    showing={showSearching}
+                >
+
+                </SearchModal>
             </>
             <SongList requestCallback={requestCallback}></SongList>
         </div>
@@ -201,7 +227,7 @@ const SongList: React.FC<{
     let [loaded, setLoaded] = useState(false);
     let [pageCount, setPageCount] = useState(0);
     // eslint-disable-next-line
-    const loadPage = ((page:number) => {
+    const loadPage = ((page: number) => {
         axios.post("/api/songlist", { page: page }).then(resp => {
             let data = resp.data;
             if (data.code) {
