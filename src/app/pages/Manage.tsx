@@ -95,6 +95,11 @@ const Manage: React.FC<{}> = () => {
     const load = () => {
         loadPage(1);
     };
+    const handleEnterAndSubmit = (e: any) => {
+        if (e.key === "Enter") {
+            load();
+        }
+    };
     const loadPage = (page: number) => {
         setLoading(true);
         axios.post("/api/manage", {
@@ -188,7 +193,7 @@ const Manage: React.FC<{}> = () => {
                 <Form loading={loading} as="div">
                     <Form.Field>
                         <label>密码</label>
-                        <Input type="password" value={password} onChange={e => setPassword(e.target.value)} ></Input>
+                        <Input type="password" value={password} onChange={e => setPassword(e.target.value)} onKeyPress={handleEnterAndSubmit}></Input>
                     </Form.Field>
                     <Button onClick={load}>
                         查询

@@ -158,6 +158,11 @@ const Home: React.FC<{}> = () => {
         setShowSearching(false);
         setSong(songID.toString());
     };
+    const handleEnterAndSubmit = (e: any) => {
+        if (e.key === "Enter") {
+            prepareSubmit();
+        }
+    };
     return <Container style={{ marginTop: "70px", marginBottom: "70px" }}>
         <div style={{ top: "10%" }}>
             <Header as="h1">
@@ -188,6 +193,7 @@ const Home: React.FC<{}> = () => {
                                     onClick: () => setShowSearching(true)
                                 }}
                                 placeholder="网易云歌曲链接或ID(必填).."
+                                onKeyPress={handleEnterAndSubmit}
                             ></Input>
                         </Form.Field>
                         <Form.Field>
@@ -197,10 +203,10 @@ const Home: React.FC<{}> = () => {
                                     ...error,
                                     requester: false
                                 })
-                            }} labelPosition="left corner" icon="user" placeholder="点歌人姓名及班级(必填).."></Input>
+                            }} labelPosition="left corner" icon="user" placeholder="点歌人姓名及班级(必填).." onKeyPress={handleEnterAndSubmit}></Input>
                         </Form.Field>
                         <Form.Field>
-                            <Input value={target} onChange={e => setTarget(e.target.value)} icon="at" placeholder="被点歌人姓名(可空).."></Input>
+                            <Input value={target} onChange={e => setTarget(e.target.value)} icon="at" placeholder="被点歌人姓名(可空).." onKeyPress={handleEnterAndSubmit}></Input>
                         </Form.Field>
                         <Form.Field>
                             <textarea placeholder="留言(可空).." value={comment} onChange={e => setComment(e.target.value)}></textarea>
@@ -211,7 +217,7 @@ const Home: React.FC<{}> = () => {
                         <Button color="green" size="large" onClick={prepareSubmit}>
                             提交
                         </Button>
-                        <Button color="blue" size="large" onClick={e => history.push("/modify")}>
+                        <Button color="blue" size="large" type="submit" onClick={e => history.push("/modify")}>
                             查询..
                         </Button>
                         <a style={{ textDecoration: "underline" }} target="_blank" rel="noopener noreferrer" href="https://yutong_java.gitee.io/ywvoice-help/guide.html">帮助文档</a>

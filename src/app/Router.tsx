@@ -10,8 +10,7 @@ const router: React.FC<{}> = () => (
         <Switch>
             <Route exact path="/" component={Home}></Route>
             <Route exact path="/modify" component={Modify}></Route>
-            <Route exact path="/play_list" component={Manage}></Route>
-            
+            <Route exact path="/play_list" component={Manage}></Route> 
         </Switch>
     </Router>
 );
